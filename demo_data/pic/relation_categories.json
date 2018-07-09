@@ -1,0 +1,126 @@
+[
+    {
+        "name": "background",
+        "id": 0
+    },
+    {
+        "name": "hold",
+        "id": 1
+    },
+    {
+        "name": "touch",
+        "id": 2
+    },
+    {
+        "name": "drive",
+        "id": 3
+    },
+    {
+        "name": "eat",
+        "id": 4
+    },
+    {
+        "name": "drink",
+        "id": 5
+    },
+    {
+        "name": "play",
+        "id": 6
+    },
+    {
+        "name": "look",
+        "id": 7
+    },
+    {
+        "name": "throw",
+        "id": 8
+    },
+    {
+        "name": "ride",
+        "id": 9
+    },
+    {
+        "name": "talk",
+        "id": 10
+    },
+    {
+        "name": "carry",
+        "id": 11
+    },
+    {
+        "name": "use",
+        "id": 12
+    },
+    {
+        "name": "pull",
+        "id": 13
+    },
+    {
+        "name": "push",
+        "id": 14
+    },
+    {
+        "name": "hit",
+        "id": 15
+    },
+    {
+        "name": "feed",
+        "id": 16
+    },
+    {
+        "name": "kick",
+        "id": 17
+    },
+    {
+        "name": "wear",
+        "id": 18
+    },
+    {
+        "name": "in-front-of",
+        "id": 19
+    },
+    {
+        "name": "next-to",
+        "id": 20
+    },
+    {
+        "name": "on-top-of",
+        "id": 21
+    },
+    {
+        "name": "behind",
+        "id": 22
+    },
+    {
+        "name": "on",
+        "id": 23
+    },
+    {
+        "name": "with",
+        "id": 24
+    },
+    {
+        "name": "in",
+        "id": 25
+    },
+    {
+        "name": "sit-on",
+        "id": 26
+    },
+    {
+        "name": "stand-on",
+        "id": 27
+    },
+    {
+        "name": "lie-in",
+        "id": 28
+    },
+    {
+        "name": "squat",
+        "id": 29
+    },
+    {
+        "name": "other",
+        "id": 30
+    }
+]
