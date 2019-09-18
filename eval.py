@@ -4,8 +4,6 @@ import cv2
 import json
 import os
 import sys
-from tqdm import trange
-
 
 class PIC(object):
     def __init__(self, semantic_path, instance_path, relation_json, mode='gt', size=None, top_k=100):
@@ -16,8 +14,11 @@ class PIC(object):
         self.size = size
         self.top_k = top_k
         self.img2rels = dict()
-        semantic_names = [name[:-4] for name in os.listdir(semantic_path) if name.endswith('.png')]
-        instance_names = [name[:-4] for name in os.listdir(instance_path) if name.endswith('.png')]
+        bad = [
+            '20136', 'indoor_03336', 'outdoor_02278', 'indoor_07165', '23514','25927','24148','24095','25955','21913', '26070','22470','23352','outdoor_01614','outdoor_04055', 'outdoor_01317','outdoor_01962', 'outdoor_02882', 'outdoor_01360'
+        ]
+        semantic_names = [name[:-4] for name in os.listdir(semantic_path) if name.endswith('.png') and name[:-4] not in bad]
+        instance_names = [name[:-4] for name in os.listdir(instance_path) if name.endswith('.png') and name[:-4] not in bad]
         assert semantic_names == instance_names
         semantic_names.sort(key=str.lower)
         self.img_names = semantic_names
@@ -28,6 +29,8 @@ class PIC(object):
 
     def create_index(self):
         for img_relation in self.img_relations:
+            if img_relation["name"][:-4] not in self.img_names:
+                continue
             if self.mode == 'gt':
                 rel_numpy = np.empty((0, 3), dtype=np.int32)
                 for index, rel in enumerate(img_relation['relations']):
@@ -157,8 +160,8 @@ def evaluate_from_dict(gt_entry, pred_entry, result_dict, iou_threshes, rel_cats
 
 def main():
     size = (640, 480)
-    gt_root = './demo_data/pic'
-    pred_root = './demo_data/pic_pred'
+    gt_root = './gt'
+    pred_root = './results'
     gt = PIC(semantic_path=os.path.join(gt_root, 'semantic'),
              instance_path=os.path.join(gt_root, 'instance'),
              relation_json=os.path.join(gt_root, 'relations.json'),
@@ -168,17 +171,18 @@ def main():
                relation_json=os.path.join(pred_root, 'relations.json'),
                mode='pred', size=size, top_k=100)
     assert gt.img_names == pred.img_names
-    # rel_cats are 1-30. 30: geometric_rel and 31: non_geometric_rel are added into rel_cats for convenience
+    # rel_cats are 1-30. 31: geometric_rel and 32: non_geometric_rel are added into rel_cats for convenience
     rel_cats = {
-        1: 'hold', 2: 'touch', 3: 'drive', 4: 'eat', 5: 'drink', 6: 'play', 7: 'look', 8: 'throw', 9: 'ride', 10: 'talk',
-        11: 'carry', 12: 'use', 13: 'pull', 14: 'push', 15: 'hit', 16: 'feed', 17: 'kick', 18: 'wear', 19: 'in-front-of', 20: 'next-to',
-        21: 'on-top-of', 22: 'behind', 23: 'on', 24: 'with', 25: 'in', 26: 'sit-on', 27: 'stand-on', 28: 'lie-in', 29: 'squat', 30: 'other',
+        1: 'in front of', 2: 'behind', 3: 'talk', 4: 'next-to', 5: 'hold', 6: 'drink', 7: 'sit-on', 8: 'stand-on', 9: 'look', 10: 'touch',
+        11: 'wear', 12: 'carry', 13: 'in', 14: 'others', 15: 'use', 16: 'lie-down', 17: 'eat', 18: 'hit', 19: 'with', 20: 'drive',
+        21: 'ride', 22: 'squat', 23: 'pull', 24: 'on-the-top-of', 25: 'on', 26: 'kick', 27: 'throw', 28: 'play', 29: 'push', 30: 'feed',
         31: 'geometric_rel', 32: 'non_geometric_rel'}
-    geometric_rel_cats = {19: 'in-front-of', 20: 'next-to', 21: 'on-top-of', 22: 'behind', 23: 'on', 25: 'in'}
+    geometric_rel_cats = {1: 'in-front-of', 4: 'next-to', 24: 'on-the-top-of', 2: 'behind', 25: 'on', 13: 'in'}
     iou_threshes = [0.25, 0.5, 0.75]
     # result_dict = {0.25: {'hold': [], 'touch': [], ... }, 0.5: ...}
     result_dict = {iou_thresh: {rel_cat_name: [] for rel_cat_name in rel_cats.values()} for iou_thresh in iou_threshes}
-    for index in trange(len(gt)):
+    for index in range(len(gt)):
+        print('%d / %d' % (index, len(gt)))
         evaluate_from_dict(gt[index], pred[index], result_dict, iou_threshes=iou_threshes,
                            rel_cats=rel_cats, geometric_rel_cats=geometric_rel_cats)
     for iou_thresh in iou_threshes:
@@ -205,8 +209,5 @@ def main():
     print('IoU(0.75): %.4f' % final_result_iou_75)
     print('Average: %.4f' % ((final_result_iou_25 + final_result_iou_50 + final_result_iou_75) / 3))
 
-
 if __name__ == '__main__':
     main()
-
-
